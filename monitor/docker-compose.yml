@@ -1,0 +1,64 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-config:/etc/grafana
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    volumes:
+      - prometheus-data:/prometheus
+      - prometheus-config:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml' 
+      - '--storage.tsdb.path=/prometheus/data'
+      - '--storage.tsdb.retention.time=1y'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+     - 9090:9090
+     
+  cadvisor:
+    image: google/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+
+  node-exporter:
+      image: prom/node-exporter:latest
+      container_name: "node_exporter"
+      hostname: "node_exporter"
+      command:
+        - '--path.rootfs=/host'
+      pid: host
+      restart: unless-stopped
+      volumes:
+        - '/:/host:ro,rslave'
+volumes:
+  prometheus-data:
+    external: true
+  prometheus-config:
+    external: true
+  grafana-data:
+    external: true
+  grafana-config:
+    external: true
+networks:
+  default:
+    name: livepeer
+    external: true

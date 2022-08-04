@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      # (Optional) Expose Dashboard
+      #- "8080:8080"  # Don't do this in production!
+    volumes:
+      - traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik:/var/log/traefik/
+
+  portainer:
+    image: portainer/portainer-ee:latest
+    container_name: portainer
+    restart: unless-stopped
+    depends_on:
+      - traefik
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data:rw
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.domain.com`)"
+      - "traefik.http.routers.portainer.service=portainer"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer.tls.certresolver=production"
+
+
+      - "traefik.http.routers.portainer_edge.rule=Host(`edge.domain.com`)"
+      - "traefik.http.routers.portainer_edge.entrypoints=websecure"
+      - "traefik.http.routers.portainer_edge.service=portainer_edge"
+      - "traefik.http.services.portainer_edge.loadbalancer.server.port=8000"
+      - "traefik.http.routers.portainer_edge.tls.certresolver=production"
+
+networks:
+  default:
+    name: portainer
+    external: true
+
+volumes:
+  portainer_data:
+    external: true
+  traefik:
+    external: true
