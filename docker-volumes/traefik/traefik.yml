@@ -1,0 +1,51 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false  # true by default
+
+log:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: common  # common, json, logfmt
+  filePath: /var/log/traefik/traefik.log
+
+accesslog:
+  format: common  # common, json, logfmt
+  filePath: /var/log/traefik/access.log
+
+# (Optional) Enable API and Dashboard
+# ---
+api:
+  dashboard: true  # true by default
+  insecure: true  # Don't do this in production!
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: :443
+
+certificatesResolvers:
+   staging:
+     acme:
+       email: email@domain.com
+       storage: /etc/traefik/certs/acme-staging.json
+       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+       httpChallenge:
+         entryPoint: web
+   production:
+     acme:
+       email: email@domain.com
+       storage: /etc/traefik/certs/acme.json
+       caServer: "https://acme-v02.api.letsencrypt.org/directory"
+       httpChallenge:
+         entryPoint: web
+providers:
+  docker:
+    exposedByDefault: false  # Default is true
+  file:
+    directory: /etc/traefik
+    watch: true

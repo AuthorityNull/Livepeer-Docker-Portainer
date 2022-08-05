@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  combined-orchestrator:
+    image: livepeer/go-livepeer:0.5.29
+    hostname: "combined-orchestrator"
+    container_name: "combined-orchestrator"
+    runtime: nvidia
+    restart: unless-stopped
+    ports:
+       - 8935:8935
+    volumes:
+      - lpdata:/root/.lpData
+    command: '-config /root/.lpData/lpcombined.conf'
+volumes:
+  lpdata:
+    external: true
+networks:
+  default:
+    name: livepeer
+    external: true
