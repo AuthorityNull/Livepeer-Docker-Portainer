@@ -1,7 +1,6 @@
 # Livepeer-Docker-Portainer
 
 A guide for Orchestrators looking to improve operational efficiency, specifically those running a multi-node setup.
-Find the full guide here:
 https://forum.livepeer.org/t/guide-livepeer-with-docker-and-portainer-for-operating-at-scale/1850
 
 # Directories
