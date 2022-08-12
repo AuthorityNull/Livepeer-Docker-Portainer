@@ -1,6 +1,8 @@
-# Livepeer-Docker-Portainer-Guide
+# Livepeer-Docker-Portainer
 
 A guide for Orchestrators looking to improve operational efficiency, specifically those running a multi-node setup.
+Find the full guide here:
+https://forum.livepeer.org/t/guide-livepeer-with-docker-and-portainer-for-operating-at-scale/1850
 
 # Directories
 
@@ -51,3 +53,46 @@ traefik.yml - email@domain.com
 # Optional - linux-scripts
 run_edge_agent.sh - YOUR_EDGE_KEY, YOUR_EDGE_ID
 ```
+
+# Portainer Agent
+In the walkthrough video, Mike Zupper is unable to browse volumes on the local Portainer server. Generally, when setting up Livepeer for production, you'll want to install Portainer on a server separate from any Livepeer nodes, that way you won't need to browse volumes on the Portainer server. That being said, the way around this limitation is to simply install a Portainer agent on the Portainer server. To do this, copy and paste this code at the bottom of the `docker-compose.yml` file we created on the Portainer server. 
+
+**Note:** Since this agent will also be proxied by Traefik, you must create another DNS record and replace ```agent.example.com``` with it.
+
+```
+    agent:
+      image: portainer/agent
+      container_name: "agent"
+      restart: unless-stopped
+      depends_on:
+        - traefik
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/lib/docker/volumes:/var/lib/docker/volumes
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.portainer_agent.entrypoints=websecure"
+        - "traefik.http.routers.portainer_agent.rule=Host(`agent.example.com`)"
+        - "traefik.http.routers.portainer_agent.service=agent"
+        - "traefik.http.services.portainer_agent.loadbalancer.server.port=9001"
+        - "traefik.http.routers.portainer_agent.tls.certresolver=production"
+  ```
+ 
+Bring the docker-compose.yml stack up and log into Portainer like you normally would. 
+You'll see a new environment called ``agent```:
+![Agent_env](https://user-images.githubusercontent.com/95463891/184393360-9892316e-751e-4119-b8fa-f1c40b36e101.PNG)
+This new environment is exactly the same as the ```local```environment but gives us some more options to play with.
+
+Click into the environment.
+Click ```Host```.
+Click ```Setup```.
+Turn on ```Enable host management features``` and  ```Enable volume management for non-administrators```.
+
+![Click_Host](https://user-images.githubusercontent.com/95463891/184395091-bebe9880-adaf-4db4-a4ce-90bf60281c56.PNG)
+
+![Enable_Permissions](https://user-images.githubusercontent.com/95463891/184395093-cfa80827-cfcd-433d-932b-68f8c3830d4c.PNG)
+
+You can now navigate to volumes inside the agent environment and browse.
+
+
+ 
