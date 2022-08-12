@@ -79,8 +79,10 @@ In the walkthrough video, Mike Zupper is unable to browse volumes on the local P
   ```
  
 Bring the docker-compose.yml stack up and log into Portainer like you normally would. 
-You'll see a new environment called ``agent```:
+You'll see a new environment called ```agent```: 
+
 ![Agent_env](https://user-images.githubusercontent.com/95463891/184393360-9892316e-751e-4119-b8fa-f1c40b36e101.PNG)
+
 This new environment is exactly the same as the ```local```environment but gives us some more options to play with.
 
 Click into the environment.
