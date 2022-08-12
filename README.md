@@ -83,11 +83,14 @@ You'll see a new environment called ```agent```:
 
 ![Agent_env](https://user-images.githubusercontent.com/95463891/184393360-9892316e-751e-4119-b8fa-f1c40b36e101.PNG)
 
-This new environment is exactly the same as the ```local```environment but gives us some more options to play with.
+This new environment is exactly the same as the ```local``` environment but gives us some more options to play with.
 
-Click into the environment.
+Click into the environment. 
+
 Click ```Host```.
+
 Click ```Setup```.
+
 Turn on ```Enable host management features``` and  ```Enable volume management for non-administrators```.
 
 ![Click_Host](https://user-images.githubusercontent.com/95463891/184395091-bebe9880-adaf-4db4-a4ce-90bf60281c56.PNG)
